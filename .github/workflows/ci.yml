@@ -3,54 +3,54 @@ name: CI Workflow
 on:
   push:
     branches:
-      - main  # Trigger the workflow on pushes to the main branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger the workflow on pull requests to the main branch
+      - main
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for GitHub Actions
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3  # Check out the repository code
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v4  # Set up Python environment
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.12  # Specify Python version
+        python-version: 3.12
 
     - name: Build Docker Image
-      run: docker build -t pytest_runner .  # Build Docker image with the specified Dockerfile
+      run: docker build -t pytest_runner .  # Build Docker image
 
     - name: Run Tests in Docker
       run: |
-        docker run --name pets_store_tests \  # Run tests in the Docker container
-          -v ${{ github.workspace }}/test_results:/tests_project/test_results \  # Mount test results directory for Allure
+        docker run --name pets_store_tests \
+          -v ${{ github.workspace }}/test_results:/tests_project/test_results \
           pytest_runner
-      continue-on-error: true  # Allow the job to proceed even if tests fail
+      continue-on-error: true  # Continue even if tests fail
 
     - name: List test results
-      if: always()  # Run this step regardless of previous step success/failure
-      run: ls -lR ./test_results  # List contents of test_results directory to verify output
+      if: always()
+      run: ls -lR ./test_results  # List contents to verify test results directory
 
     - name: Set up JDK 17
-      if: always()  # Always execute this step, required for Allure report generation
-      uses: actions/setup-java@v3  # Set up Java environment
+      if: always()
+      uses: actions/setup-java@v3
       with:
-        distribution: 'temurin'  # Specify the Java distribution
-        java-version: '17'  # Java version required for Allure
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: Install Allure
-      if: always()  # Always execute this step, installs Allure CLI for report generation
+      if: always()
       run: npm install -g allure-commandline
 
     - name: Generate Allure Report
-      if: always()  # Always execute, even if tests failed, to generate a report
-      run: allure generate ./test_results -o ./test_results/allure-report --clean  # Generate report in allure-report folder
+      if: always()
+      run: allure generate ./test_results -o ./test_results/allure-report --clean
 
     - name: Deploy to GitHub Pages
-      if: always()  # Publish report even if tests failed
-      uses: peaceiris/actions-gh-pages@v3  # Deploy Allure report to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.MY_GITHUB_TOKEN }}  # Use token for authentication
-        publish_dir: ./test_results/allure-report  # Directory to publish on GitHub Pages
+        github_token: ${{ secrets.MY_GITHUB_TOKEN }}
+        publish_dir: ./test_results/allure-report
