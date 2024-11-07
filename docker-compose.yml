@@ -6,6 +6,6 @@ services:
     image: pytest_runner
     container_name: pytest_runner_container
     volumes:
-      - .:/tests_project/  # Mount project directory
-      - ./test_results:/tests_project/test_results  # Mount for test results
-    command: ["/opt/venv/bin/python", "-m", "pytest", "-s", "--alluredir=test_results/", "/tests_project/tests/"]
+      - .:/tests_project/
+      - ./test_results:/tests_project/test_results
+    command: ["/opt/venv/bin/python", "-m", "pytest", "-s", "--alluredir=/tests_project/test_results", "/tests_project/tests/"]

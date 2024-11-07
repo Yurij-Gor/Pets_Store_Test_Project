@@ -20,18 +20,18 @@ jobs:
         python-version: 3.12
 
     - name: Build Docker Image
-      run: docker build -t pytest_runner .  # Build Docker image
+      run: docker build -t pytest_runner .
 
     - name: Run Tests in Docker
       run: |
         docker run --name pets_store_tests \
           -v ${{ github.workspace }}/test_results:/tests_project/test_results \
           pytest_runner
-      continue-on-error: true  # Continue even if tests fail
+      continue-on-error: true
 
     - name: List test results
       if: always()
-      run: ls -lR ./test_results  # List contents to verify test results directory
+      run: ls -lR ./test_results
 
     - name: Set up JDK 17
       if: always()
