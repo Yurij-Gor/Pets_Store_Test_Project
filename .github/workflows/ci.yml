@@ -1,0 +1,57 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.12
+
+    - name: Build Docker Image
+      run: docker build -t pytest_runner .
+
+    - name: Run Tests in Docker
+      run: |
+        docker run --name pets_store_tests \
+          -v ${{ github.workspace }}/test_results:/tests_project/test_results \
+          pytest_runner
+      continue-on-error: true
+
+    - name: List test results
+      if: always()
+      run: ls -lR ./test_results
+
+    - name: Set up JDK 17
+      if: always()
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Install Allure
+      if: always()
+      run: npm install -g allure-commandline
+
+    - name: Generate Allure Report
+      if: always()
+      run: allure generate ./test_results -o ./test_results/allure-report --clean
+
+    - name: Deploy to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.MY_GITHUB_TOKEN }}
+        publish_dir: ./test_results/allure-report

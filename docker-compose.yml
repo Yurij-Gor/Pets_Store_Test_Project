@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  test_runner:
+    build: .
+    image: pytest_runner
+    container_name: pytest_runner_container
+    volumes:
+      - .:/tests_project/
+    command: ["/opt/venv/bin/python", "-m", "pytest", "-s", "--alluredir=test_results/", "/tests_project/tests/"]
