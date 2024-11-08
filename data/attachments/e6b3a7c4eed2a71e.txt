@@ -1,0 +1,8 @@
+Pet with ID 795642 successfully deleted.
+Pet with ID 371246 successfully deleted.
+Pet with ID 655003 successfully deleted.
+Pet with ID 789801 successfully deleted.
+Pet with ID 287676 successfully deleted.
+Pet with ID 323940 successfully deleted.
+Pet with ID 496014 successfully deleted.
+Pet with ID 105280 was already deleted or does not exist.
